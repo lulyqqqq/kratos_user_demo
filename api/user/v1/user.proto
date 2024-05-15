@@ -1,0 +1,120 @@
+syntax = "proto3";
+
+package user.v1;
+
+import "google/api/annotations.proto";
+
+option go_package = "userDemo/api/user/v1;v1";
+
+
+// The greeting service definition.
+service User {
+  // Sends a greeting
+  rpc SayHello (HelloRequest) returns (HelloReply) {
+    option (google.api.http) = {
+      get: "/helloworld/{name}"
+    };
+  }
+  // 用户注册
+  rpc Register(UserRegister) returns(UserRegisterReply){
+    option (google.api.http) = {
+      post : "/api/user/register",
+      body : "*"
+    };
+  }
+
+  // 用户登录
+  rpc Login(UserLoginRequest) returns(UserLoginReply){
+    option (google.api.http) = {
+      post : "/api/user/login",
+      body : "*"
+    };
+  }
+
+  // 根据名称查询用户信息
+  rpc QuertyUserByName(QueryUserRequest) returns(QueryUserReply){
+    option (google.api.http) = {
+      get : "/api/user/query/{name}",
+    };
+  }
+
+  // 查询全部用户信息
+  rpc QuertyAllUser(QueryAllUserRequest) returns(QueryAllUserReply){
+    option (google.api.http) = {
+       get : "/api/user/query",
+    };
+  }
+
+    // 查询全部用户信息
+    rpc DeleteUserByName(DeleteUserByNameRequest) returns(DeleteUserByNameReply){
+      option (google.api.http) = {
+         delete : "/api/user/delete",
+      };
+    }
+}
+
+// The request message containing the user's name.
+message HelloRequest {
+  string name = 1;
+}
+
+// The response message containing the greetings
+message HelloReply {
+  string message = 1;
+}
+
+message UserInfo {
+  string name = 1;
+  string password = 2;
+  string sex = 3;
+  int32 role = 4;
+}
+message UserRegister{
+  string name = 1;
+  string password = 2;
+  string sex = 3;
+  int32 role = 4;
+}
+
+message UserRegisterReply{
+  int32 code = 1;
+  string message = 2;
+}
+
+message UserLoginRequest{
+  string name = 1;
+  string password = 2;
+}
+
+message UserLoginReply{
+  int32 code =1 ;
+  string message = 2;
+  string token = 3;
+}
+
+message QueryUserRequest{
+  string name = 1;
+}
+
+message QueryUserReply{
+  UserInfo User = 1;
+}
+
+message QueryAllUserRequest{
+
+}
+
+message QueryAllUserReply{
+  int32 code = 1;
+  string message = 2;
+  repeated UserInfo user = 3;
+}
+
+message DeleteUserByNameRequest{
+  string name = 1;
+}
+
+message DeleteUserByNameReply{
+  int32 code = 1;
+  string message = 2;
+}

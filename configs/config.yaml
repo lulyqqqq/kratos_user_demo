@@ -1,0 +1,17 @@
+server:
+  http:
+    addr: 0.0.0.0:8000
+    timeout: 1s
+  grpc:
+    addr: 0.0.0.0:9000
+    timeout: 1s
+data:
+  database:
+    driver: mysql
+    source: root:nian0209@tcp(127.0.0.1:3306)/test?parseTime=True&loc=Local # 定义符合gorm的dsn连接方式
+  redis:
+    addr: 127.0.0.1:6379
+    db: 0
+# 认证配置
+jwt:
+  secret: "user_demo"
