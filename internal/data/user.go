@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	"userDemo/common/util"
 	"userDemo/internal/biz"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -49,7 +50,6 @@ func (r *userRepo) QueryAllUser(ctx context.Context) ([]*biz.Users, error) {
 }
 
 func (r *userRepo) DeleteUserByName(ctx context.Context, name string) error {
-	r.data.redis.Get("")
 	var user biz.Users
 	err := r.data.gormDB.Where("name = ?", name).Delete(&user).Error
 	if err != nil {
@@ -85,8 +85,13 @@ func (r *userRepo) SaveTokenToRedis(ctx context.Context, name string, token stri
 	r.data.redis.Set(ctx, name, token, time.Hour*2)
 }
 
-func (r *userRepo) Update(ctx context.Context, g *biz.Users) (*biz.Users, error) {
-	return g, nil
+func (r *userRepo) UpdateUser(ctx context.Context, user *biz.Users) error {
+	password := util.HashAndSalt(user.Password)
+	err := r.data.gormDB.Model(&biz.Users{}).Where("name = ?", user.Name).Update("password", password).Update("sex", user.Sex).Update("role", user.Role).Error
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (r *userRepo) FindByID(context.Context, int64) (*biz.Users, error) {

@@ -29,7 +29,7 @@ type Users struct {
 // GreeterRepo is a Greater repo.
 type UserRepo interface {
 	Save(context.Context, *Users) error
-	Update(context.Context, *Users) (*Users, error)
+	UpdateUser(context.Context, *Users) error
 	FindByID(context.Context, int64) (*Users, error)
 	ListByHello(context.Context, string) ([]*Users, error)
 	ListAll(context.Context) ([]*Users, error)
@@ -136,4 +136,16 @@ func (uc *UserUsecase) DeleteUserByName(ctx context.Context, name string) error 
 		return fmt.Errorf("没有权限删除")
 	}
 	return uc.repo.DeleteUserByName(ctx, name)
+}
+
+func (uc *UserUsecase) UpdateUser(ctx context.Context, userInfo *Users) error {
+	// 验证权限是否可以删除
+	user, err := uc.repo.CheckUserRole(ctx)
+	if err != nil || user == nil {
+		return err
+	}
+	if user.Role != 1 {
+		return fmt.Errorf("没有权限")
+	}
+	return uc.repo.UpdateUser(ctx, userInfo)
 }

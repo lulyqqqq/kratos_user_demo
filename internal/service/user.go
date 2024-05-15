@@ -99,3 +99,18 @@ func (s *UserService) DeleteUserByName(ctx context.Context, req *v1.DeleteUserBy
 }
 
 // 修改用户信息
+func (s *UserService) UpdateUser(ctx context.Context, req *v1.UpdateUserRequest) (*v1.UpdateUserReply, error) {
+	err := s.uc.UpdateUser(ctx, &biz.Users{
+		Name:     req.Name,
+		Password: req.Password,
+		Sex:      req.Sex,
+		Role:     req.Role,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &v1.UpdateUserReply{
+		Code:    200,
+		Message: "删除成功",
+	}, nil
+}

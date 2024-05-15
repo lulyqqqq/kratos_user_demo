@@ -46,9 +46,17 @@ service User {
   }
 
     // 查询全部用户信息
-    rpc DeleteUserByName(DeleteUserByNameRequest) returns(DeleteUserByNameReply){
-      option (google.api.http) = {
-         delete : "/api/user/delete",
+  rpc DeleteUserByName(DeleteUserByNameRequest) returns(DeleteUserByNameReply){
+    option (google.api.http) = {
+        delete : "/api/user/delete",
+    };
+  }
+  
+    // 查询全部用户信息
+  rpc UpdateUser(UpdateUserRequest) returns(UpdateUserReply){
+    option (google.api.http) = {
+         put : "/api/user/delete",
+         body: "*"
       };
     }
 }
@@ -115,6 +123,18 @@ message DeleteUserByNameRequest{
 }
 
 message DeleteUserByNameReply{
+  int32 code = 1;
+  string message = 2;
+}
+
+message UpdateUserRequest{
+  string name = 1;
+  string password = 2;
+  string sex = 3;
+  int32 role = 4;
+}
+
+message UpdateUserReply{
   int32 code = 1;
   string message = 2;
 }

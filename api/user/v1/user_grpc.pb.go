@@ -25,6 +25,7 @@ const (
 	User_QuertyUserByName_FullMethodName = "/user.v1.User/QuertyUserByName"
 	User_QuertyAllUser_FullMethodName    = "/user.v1.User/QuertyAllUser"
 	User_DeleteUserByName_FullMethodName = "/user.v1.User/DeleteUserByName"
+	User_UpdateUser_FullMethodName       = "/user.v1.User/UpdateUser"
 )
 
 // UserClient is the client API for User service.
@@ -43,6 +44,8 @@ type UserClient interface {
 	QuertyAllUser(ctx context.Context, in *QueryAllUserRequest, opts ...grpc.CallOption) (*QueryAllUserReply, error)
 	// 查询全部用户信息
 	DeleteUserByName(ctx context.Context, in *DeleteUserByNameRequest, opts ...grpc.CallOption) (*DeleteUserByNameReply, error)
+	// 查询全部用户信息
+	UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UpdateUserReply, error)
 }
 
 type userClient struct {
@@ -107,6 +110,15 @@ func (c *userClient) DeleteUserByName(ctx context.Context, in *DeleteUserByNameR
 	return out, nil
 }
 
+func (c *userClient) UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UpdateUserReply, error) {
+	out := new(UpdateUserReply)
+	err := c.cc.Invoke(ctx, User_UpdateUser_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServer is the server API for User service.
 // All implementations must embed UnimplementedUserServer
 // for forward compatibility
@@ -123,6 +135,8 @@ type UserServer interface {
 	QuertyAllUser(context.Context, *QueryAllUserRequest) (*QueryAllUserReply, error)
 	// 查询全部用户信息
 	DeleteUserByName(context.Context, *DeleteUserByNameRequest) (*DeleteUserByNameReply, error)
+	// 查询全部用户信息
+	UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserReply, error)
 	mustEmbedUnimplementedUserServer()
 }
 
@@ -147,6 +161,9 @@ func (UnimplementedUserServer) QuertyAllUser(context.Context, *QueryAllUserReque
 }
 func (UnimplementedUserServer) DeleteUserByName(context.Context, *DeleteUserByNameRequest) (*DeleteUserByNameReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteUserByName not implemented")
+}
+func (UnimplementedUserServer) UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateUser not implemented")
 }
 func (UnimplementedUserServer) mustEmbedUnimplementedUserServer() {}
 
@@ -269,6 +286,24 @@ func _User_DeleteUserByName_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _User_UpdateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).UpdateUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: User_UpdateUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).UpdateUser(ctx, req.(*UpdateUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // User_ServiceDesc is the grpc.ServiceDesc for User service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -299,6 +334,10 @@ var User_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteUserByName",
 			Handler:    _User_DeleteUserByName_Handler,
+		},
+		{
+			MethodName: "UpdateUser",
+			Handler:    _User_UpdateUser_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

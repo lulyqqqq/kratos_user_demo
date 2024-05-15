@@ -25,6 +25,7 @@ const OperationUserQuertyAllUser = "/user.v1.User/QuertyAllUser"
 const OperationUserQuertyUserByName = "/user.v1.User/QuertyUserByName"
 const OperationUserRegister = "/user.v1.User/Register"
 const OperationUserSayHello = "/user.v1.User/SayHello"
+const OperationUserUpdateUser = "/user.v1.User/UpdateUser"
 
 type UserHTTPServer interface {
 	// DeleteUserByName 查询全部用户信息
@@ -39,6 +40,8 @@ type UserHTTPServer interface {
 	Register(context.Context, *UserRegister) (*UserRegisterReply, error)
 	// SayHello Sends a greeting
 	SayHello(context.Context, *HelloRequest) (*HelloReply, error)
+	// UpdateUser 查询全部用户信息
+	UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserReply, error)
 }
 
 func RegisterUserHTTPServer(s *http.Server, srv UserHTTPServer) {
@@ -49,6 +52,7 @@ func RegisterUserHTTPServer(s *http.Server, srv UserHTTPServer) {
 	r.GET("/api/user/query/{name}", _User_QuertyUserByName0_HTTP_Handler(srv))
 	r.GET("/api/user/query", _User_QuertyAllUser0_HTTP_Handler(srv))
 	r.DELETE("/api/user/delete", _User_DeleteUserByName0_HTTP_Handler(srv))
+	r.PUT("/api/user/delete", _User_UpdateUser0_HTTP_Handler(srv))
 }
 
 func _User_SayHello0_HTTP_Handler(srv UserHTTPServer) func(ctx http.Context) error {
@@ -177,6 +181,28 @@ func _User_DeleteUserByName0_HTTP_Handler(srv UserHTTPServer) func(ctx http.Cont
 	}
 }
 
+func _User_UpdateUser0_HTTP_Handler(srv UserHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in UpdateUserRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationUserUpdateUser)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.UpdateUser(ctx, req.(*UpdateUserRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*UpdateUserReply)
+		return ctx.Result(200, reply)
+	}
+}
+
 type UserHTTPClient interface {
 	DeleteUserByName(ctx context.Context, req *DeleteUserByNameRequest, opts ...http.CallOption) (rsp *DeleteUserByNameReply, err error)
 	Login(ctx context.Context, req *UserLoginRequest, opts ...http.CallOption) (rsp *UserLoginReply, err error)
@@ -184,6 +210,7 @@ type UserHTTPClient interface {
 	QuertyUserByName(ctx context.Context, req *QueryUserRequest, opts ...http.CallOption) (rsp *QueryUserReply, err error)
 	Register(ctx context.Context, req *UserRegister, opts ...http.CallOption) (rsp *UserRegisterReply, err error)
 	SayHello(ctx context.Context, req *HelloRequest, opts ...http.CallOption) (rsp *HelloReply, err error)
+	UpdateUser(ctx context.Context, req *UpdateUserRequest, opts ...http.CallOption) (rsp *UpdateUserReply, err error)
 }
 
 type UserHTTPClientImpl struct {
@@ -266,6 +293,19 @@ func (c *UserHTTPClientImpl) SayHello(ctx context.Context, in *HelloRequest, opt
 	opts = append(opts, http.Operation(OperationUserSayHello))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *UserHTTPClientImpl) UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...http.CallOption) (*UpdateUserReply, error) {
+	var out UpdateUserReply
+	pattern := "/api/user/delete"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationUserUpdateUser))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "PUT", path, in, &out, opts...)
 	if err != nil {
 		return nil, err
 	}
