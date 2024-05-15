@@ -45,14 +45,14 @@ service User {
     };
   }
 
-    // 查询全部用户信息
+    // 根据用户名称删除用户信息
   rpc DeleteUserByName(DeleteUserByNameRequest) returns(DeleteUserByNameReply){
     option (google.api.http) = {
         delete : "/api/user/delete",
     };
   }
   
-    // 查询全部用户信息
+    // 需改用户信息
   rpc UpdateUser(UpdateUserRequest) returns(UpdateUserReply){
     option (google.api.http) = {
          put : "/api/user/delete",
